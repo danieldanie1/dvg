@@ -82,19 +82,7 @@
   <div class="value" id="next-new">...</div>
 </div>
 
-<script>
-  // Toggle dark mode
-  const toggleBtn = document.getElementById('toggle');
-  toggleBtn.onclick = () => {
-    document.body.classList.toggle('dark-mode');
-    const mode = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
-    localStorage.setItem('astro_mode', mode);
-    toggleBtn.textContent = mode === 'dark' ? '☀️' : '🌙';
-  };
-  if (localStorage.getItem('astro_mode') === 'dark') {
-    document.body.classList.add('dark-mode');
-    toggleBtn.textContent = '☀️';
-  }
+
 
   // Astrology data
   const now = new Date();
