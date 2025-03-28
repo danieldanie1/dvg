@@ -2,24 +2,171 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Astro Bar</title>
+  <title>Daveegoh Astro Bar</title>
   <style>
     body {
       margin: 0;
-      font-family: sans-serif;
-      background: #fff;
-      color: #222;
+      font-family: 'Helvetica Neue', sans-serif;
+      background: #ffffff;
+      color: #111;
+      transition: background 0.6s, color 0.6s;
+      text-align: center;
+      padding: 20px 10px;
     }
-    /* Additional styles go here... */
+    body.dark-mode {
+      background: #111;
+      color: #f2f2f2;
+    }
+    .section {
+      margin-bottom: 12px;
+      opacity: 0;
+      animation: fadeIn 1.4s ease forwards;
+    }
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+    .label {
+      font-size: 0.85rem;
+      letter-spacing: 0.5px;
+      color: #666;
+      margin-bottom: 4px;
+    }
+    .value {
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
+    button#toggle {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      font-size: 1.2rem;
+      border: none;
+      background: none;
+      cursor: pointer;
+      z-index: 999;
+      color: inherit;
+    }
   </style>
 </head>
 <body>
-  <!-- Your astrology content -->
-  <div>Sun Sign: <span id="sun-sign">♈ Aries</span></div>
-  <div>Moon Sign: <span id="moon-sign">♓ Pisces</span></div>
-  <script>
-    // JS to dynamically calculate signs
-  </script>
+
+<button id="toggle">🌙</button>
+
+<div class="section">
+  <div class="label">☀️ Current Sun Sign</div>
+  <div class="value" id="sun-sign">...</div>
+</div>
+
+<div class="section">
+  <div class="label">🌞 Next Sun Sign</div>
+  <div class="value" id="sun-next">...</div>
+</div>
+
+<div class="section">
+  <div class="label">🌙 Current Moon Sign</div>
+  <div class="value" id="moon-sign">...</div>
+</div>
+
+<div class="section">
+  <div class="label">🌗 Current Moon Phase</div>
+  <div class="value" id="moon-phase">...</div>
+</div>
+
+<div class="section">
+  <div class="label">🌕 Last Full Moon</div>
+  <div class="value" id="last-full">...</div>
+</div>
+
+<div class="section">
+  <div class="label">🌑 Next New Moon</div>
+  <div class="value" id="next-new">...</div>
+</div>
+
+<script>
+  // Toggle dark mode
+  const toggleBtn = document.getElementById('toggle');
+  toggleBtn.onclick = () => {
+    document.body.classList.toggle('dark-mode');
+    const mode = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
+    localStorage.setItem('astro_mode', mode);
+    toggleBtn.textContent = mode === 'dark' ? '☀️' : '🌙';
+  };
+  if (localStorage.getItem('astro_mode') === 'dark') {
+    document.body.classList.add('dark-mode');
+    toggleBtn.textContent = '☀️';
+  }
+
+  // Astrology data
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  const sunSigns = [
+    { name: "♒ Aquarius", start: "01-20" },
+    { name: "♓ Pisces", start: "02-19" },
+    { name: "♈ Aries", start: "03-21" },
+    { name: "♉ Taurus", start: "04-20" },
+    { name: "♊ Gemini", start: "05-21" },
+    { name: "♋ Cancer", start: "06-21" },
+    { name: "♌ Leo", start: "07-23" },
+    { name: "♍ Virgo", start: "08-23" },
+    { name: "♎ Libra", start: "09-23" },
+    { name: "♏ Scorpio", start: "10-23" },
+    { name: "♐ Sagittarius", start: "11-22" },
+    { name: "♑ Capricorn", start: "12-22" }
+  ];
+
+  function getSunSign() {
+    const y = today.getFullYear();
+    for (let i = 0; i < sunSigns.length; i++) {
+      const curr = new Date(`${y}-${sunSigns[i].start}`);
+      const next = new Date(`${y}-${sunSigns[(i + 1) % sunSigns.length].start}`);
+      if (today >= curr && today < next) {
+        const daysToNext = Math.ceil((next - today) / (1000 * 60 * 60 * 24));
+        return {
+          current: sunSigns[i].name,
+          next: sunSigns[(i + 1) % sunSigns.length].name + ` (${daysToNext} days)`
+        };
+      }
+    }
+    return { current: "♑ Capricorn", next: "♒ Aquarius (X days)" };
+  }
+
+  const moonSigns = ["♈ Aries", "♉ Taurus", "♊ Gemini", "♋ Cancer", "♌ Leo", "♍ Virgo",
+                     "♎ Libra", "♏ Scorpio", "♐ Sagittarius", "♑ Capricorn", "♒ Aquarius", "♓ Pisces"];
+
+  function getMoonData() {
+    const moonIndex = Math.floor((today.getTime() / (1000 * 60 * 60 * 24)) / 2) % moonSigns.length;
+    const nextIndex = (moonIndex + 1) % moonSigns.length;
+    const moonDay = today.getDate() % 29;
+    const moonPhases = ["🌑 New Moon", "🌒 Waxing Crescent", "🌓 First Quarter", "🌔 Waxing Gibbous", "🌕 Full Moon", "🌖 Waning Gibbous", "🌗 Last Quarter", "🌘 Waning Crescent"];
+    const phase = moonPhases[Math.floor((moonDay / 29) * moonPhases.length)];
+
+    const lastFullMoon = { date: new Date("2025-03-14"), sign: "♈ Aries" };
+    const nextNewMoon = { date: new Date("2025-04-08"), sign: "♒ Aquarius" };
+    const sinceFull = Math.floor((today - lastFullMoon.date) / (1000 * 60 * 60 * 24));
+    const untilNew = Math.ceil((nextNewMoon.date - today) / (1000 * 60 * 60 * 24));
+
+    return {
+      sign: moonSigns[moonIndex],
+      nextSign: moonSigns[nextIndex],
+      phase,
+      sinceFull: `${sinceFull} days ago (${lastFullMoon.sign})`,
+      untilNew: `${untilNew} days (${nextNewMoon.sign})`
+    };
+  }
+
+  const sun = getSunSign();
+  const moon = getMoonData();
+
+  document.getElementById("sun-sign").textContent = sun.current;
+  document.getElementById("sun-next").textContent = sun.next;
+  document.getElementById("moon-sign").textContent = `${moon.sign} (next: ${moon.nextSign} in 2 days)`;
+  document.getElementById("moon-phase").textContent = moon.phase;
+  document.getElementById("last-full").textContent = moon.sinceFull;
+  document.getElementById("next-new").textContent = moon.untilNew;
+</script>
+
 </body>
 </html>
+
 
