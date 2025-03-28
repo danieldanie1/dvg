@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      text-align: center;
+      background: #fff;
+      color: #222;
+    }
+    .mantra, .prompt {
+      padding: 10px 20px;
+      font-style: italic;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+    .label {
+      font-size: 0.8rem;
+      color: #777;
+      margin-bottom: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="mantra">
+    <div class="label">🌞 Daily Mantra</div>
+    <div id="mantra"></div>
+  </div>
+  <div class="prompt">
+    <div class="label">🪶 Journal Prompt</div>
+    <div id="prompt"></div>
+  </div>
+
+  <script>
+    const mantras = [
+      "What you eat becomes your energy. Choose devotion.",
+      "In stillness, the truth of your body speaks.",
+      "Let hunger teach you. Let fullness not distract you.",
+      "Plant power is sacred. So are you.",
+      "Every bite is a choice. Every choice is a vibration.",
+      "You’re not just eating. You’re aligning."
+    ];
+
+    const prompts = [
+      "Where in my life am I not listening to my body?",
+      "What did I consume today that truly nourished me?",
+      "How can I bring more stillness to my choices?",
+      "What am I hungry for beyond food?",
+      "What would it feel like to be deeply aligned?"
+    ];
+
+    const day = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+    document.getElementById('mantra').innerText = mantras[day % mantras.length];
+    document.getElementById('prompt').innerText = prompts[day % prompts.length];
+  </script>
+</body>
+</html>
